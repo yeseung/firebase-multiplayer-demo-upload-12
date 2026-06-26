@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>열기구를 지켜라 - 수호팀 vs 방해팀</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #dff6ff;
+            color: #222;
+        }
+
+        .game-wrap {
+            width: 1000px;
+            height: 740px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(#8de7ff 0%, #ffffff 70%, #b9f0b0 100%);
+            border: 3px solid #111;
+        }
+
+        .header {
+            height: 70px;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .online {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .sky {
+            position: relative;
+            width: 100%;
+            height: 500px;
+        }
+
+        .line-top,
+        .line-bottom {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            border-top: 3px dashed #333;
+            z-index: 1;
+        }
+
+        .line-top {
+            top: 20px;
+        }
+
+        .line-bottom {
+            bottom: 20px;
+        }
+
+        .goal-text {
+            position: absolute;
+            left: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .goal-top {
+            top: 0;
+            color: #0066cc;
+        }
+
+        .goal-bottom {
+            bottom: 0;
+            color: #cc0000;
+        }
+
+        #balloon {
+            position: absolute;
+            width: 170px;
+            height: auto;
+            left: 415px;
+            top: 230px;
+            transition: top 0.15s linear;
+            z-index: 5;
+            animation: balloonFloat 0.8s linear infinite alternate-reverse;
+        }
+        @keyframes balloonFloat {
+            from { transform: translateY(0) }
+            to { transform: translateY(5px) }
+        }
+
+        .status {
+            height: 55px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .word-box {
+            font-size: 30px;
+            color: #111;
+            background: #fff;
+            border: 3px solid #111;
+            border-radius: 12px;
+            padding: 8px 30px;
+            display: inline-block;
+        }
+
+        .battle {
+            height: 115px;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding-top: 10px;
+        }
+
+        .team {
+            width: 360px;
+            background: rgba(255,255,255,0.9);
+            border: 3px solid #111;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .team-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .angel {
+            color: #0066cc;
+        }
+
+        .devil {
+            color: #cc0000;
+        }
+
+        .team input {
+            width: 100%;
+            height: 48px;
+            font-size: 24px;
+            text-align: center;
+            border: 2px solid #111;
+            border-radius: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #333;
+        }
+
+        @media (max-width: 1000px) {
+            .game-wrap {
+                width: 100vw;
+                height: 740px;
+                border-left: 0;
+                border-right: 0;
+            }
+
+            #balloon {
+                left: calc(50% - 85px);
+            }
+
+            .battle {
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .team {
+                width: 50%;
+                padding: 10px;
+            }
+
+            .team-title {
+                font-size: 18px;
+            }
+
+            .team input {
+                font-size: 18px;
+            }
+
+            .title {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="game-wrap">
+
+    <div class="header">
+        <div class="title">열기구를 지켜라 <span class="angel">수호팀</span> vs <span class="devil">방해팀</span></div>
+        <div class="online">동시 접속자수 : <span id="onlineCount">0</span>명</div>
+    </div>
+
+    <div class="sky">
+        <div class="goal-text goal-top">▲ 수호팀 승리</div>
+        <div class="line-top"></div>
+
+        <img id="balloon" src="images/balloon-air.png" alt="열기구">
+
+        <div class="line-bottom"></div>
+        <div class="goal-text goal-bottom">▼ 방해팀 승리</div>
+    </div>
+
+    <div class="status">
+        문제 :
+        <span id="wordBox" class="word-box">타자</span>
+    </div>
+
+    <div class="battle">
+        <div class="team">
+            <div class="team-title angel">수호팀 상승 +1</div>
+            <input type="text" id="top" placeholder="정답 입력 후 Enter">
+        </div>
+
+        <div class="team">
+            <div class="team-title devil">방해팀 하강 -1</div>
+            <input type="text" id="bottom" placeholder="정답 입력 후 Enter">
+        </div>
+    </div>
+
+    <div class="footer">
+        같은 문제를 입력하면 수호팀은 위로, 방해팀은 아래로 이동합니다.
+    </div>
+
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+    import {
+        getDatabase,
+        ref,
+        set,
+        onValue,
+        onDisconnect,
+        runTransaction,
+        serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
+
+    /* Firebase 설정값 교체 */
+    const firebaseConfig = {
+        apiKey: "AIzaSyBCN-yOjN0CYjdskON8kOzELYELQ8zRMm8",
+        authDomain: "temp-crud-85ba9.firebaseapp.com",
+        databaseURL: "https://temp-crud-85ba9-default-rtdb.firebaseio.com",
+        projectId: "temp-crud-85ba9",
+        storageBucket: "temp-crud-85ba9.firebasestorage.app",
+        messagingSenderId: "990504243112",
+        appId: "1:990504243112:web:69f2117ad0ffc9ca1f579d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const balloon = document.getElementById("balloon");
+    const onlineCount = document.getElementById("onlineCount");
+    const topInput = document.getElementById("top");
+    const bottomInput = document.getElementById("bottom");
+    const wordBox = document.getElementById("wordBox");
+
+    const words = [
+        "l",
+        "l",
+        "l",
+    ];
+
+    const START_TOP = 230;
+    const TOP_LIMIT = 20;
+    const BOTTOM_LIMIT = 420;
+
+    const gameRef = ref(db, "balloonGame");
+    const positionRef = ref(db, "balloonGame/position");
+    const wordRef = ref(db, "balloonGame/word");
+
+    const userId = crypto.randomUUID();
+    const userRef = ref(db, "balloonGame/users/" + userId);
+
+    set(userRef, {
+        joinedAt: serverTimestamp()
+    });
+
+    onDisconnect(userRef).remove();
+
+    onValue(ref(db, "balloonGame/users"), snapshot => {
+        const users = snapshot.val() || {};
+        onlineCount.textContent = Object.keys(users).length;
+    });
+
+    onValue(positionRef, snapshot => {
+        let top = snapshot.val();
+
+        if (top === null) {
+            set(positionRef, START_TOP);
+            return;
+        }
+
+        balloon.style.top = top + "px";
+
+        if (top <= TOP_LIMIT) {
+            //alert("천사 승리! 열기구를 지켰습니다.");
+            //resetGame();
+            balloon.style.top = TOP_LIMIT + "px";
+        }
+
+        if (top >= BOTTOM_LIMIT) {
+            //alert("악마 승리! 열기구가 추락했습니다.");
+            //resetGame();
+            balloon.style.top = BOTTOM_LIMIT + "px";
+        }
+    });
+
+    onValue(wordRef, snapshot => {
+        let word = snapshot.val();
+
+        if (!word) {
+            word = randomWord();
+            set(wordRef, word);
+        }
+
+        wordBox.textContent = word;
+    });
+
+    function randomWord() {
+        return words[Math.floor(Math.random() * words.length)];
+    }
+
+    function resetGame() {
+        set(positionRef, START_TOP);
+        set(wordRef, randomWord());
+        topInput.value = "";
+        bottomInput.value = "";
+    }
+
+    function moveBalloon(amount) {
+        runTransaction(positionRef, current => {
+            if (current === null) current = START_TOP;
+
+            let next = current + amount;
+
+            if (next < TOP_LIMIT) next = TOP_LIMIT;
+            if (next > BOTTOM_LIMIT) next = BOTTOM_LIMIT;
+
+            return next;
+        });
+
+        set(wordRef, randomWord());
+    }
+
+    function checkAnswer(input, amount) {
+        const answer = input.value.trim();
+        const currentWord = wordBox.textContent.trim();
+
+        if (answer === currentWord) {
+            moveBalloon(amount);
+        }
+
+        input.value = "";
+        input.focus();
+    }
+
+    topInput.addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+            checkAnswer(topInput, -20);
+        }
+    });
+
+    bottomInput.addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+            checkAnswer(bottomInput, 20);
+        }
+    });
+
+    window.addEventListener("load", () => {
+        topInput.focus();
+    });
+</script>
+
+</body>
+</html>
